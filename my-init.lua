@@ -176,6 +176,10 @@ require('telescope').setup{
     file_ignore_patterns = { "node_modules" },
     sorting_strategy = "ascending"
   },
+  oldfiles = {
+    include_current_session = true,
+    cwd_only = false 
+  },
   extensions = {
     fzf = {
       fuzzy = true,
