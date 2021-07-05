@@ -71,17 +71,17 @@ key_mapper('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>')
 key_mapper('n', '<leader>i', ':lua vim.lsp.buf.formatting_sync()<CR>')
 key_mapper('n', '<leader>dn', ':lua vim.lsp.diagnostic.goto_next()<CR>')
 key_mapper('n', '<leader>dp', ':lua vim.lsp.diagnostic.goto_prev()<CR>')
-key_mapper('n', '<C-p>', ':lua require"telescope.builtin".find_files()<CR>')
-key_mapper('n', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
-key_mapper('n', '<leader>fh', ':lua require"telescope.builtin".help_tags()<CR>')
-key_mapper('n', '<C-c>', ':lua require"telescope.builtin".buffers()<CR>')
-key_mapper('n', '<C-g>', ':lua require"telescope.builtin".grep_string({ search=vim.fn.input("Grep for >") })<CR>')
-key_mapper('n', '<C-e>', ':lua require"telescope.builtin".lsp_workspace_diagnostics()<CR>')
-key_mapper('n', '<leader>fa', ':lua require"telescope.builtin".lsp_range_code_actions()<CR>')
-key_mapper('n', '<leader>gc', ':lua require"telescope.builtin".git_commits()<CR>')
-key_mapper('n', '<leader>gb', ':lua require"telescope.builtin".git_branches()<CR>')
-key_mapper('n', '<leader>gs', ':lua require"telescope.builtin".git_status()<CR>')
-key_mapper('n', '<leader>o', ':lua require"telescope.builtin".oldfiles()<CR>')
+key_mapper('', '<C-p>', ':lua require"telescope.builtin".find_files({ search_dirs = { "/home/rufus/Dev" } })<CR>')
+key_mapper('', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
+key_mapper('', '<leader>fh', ':lua require"telescope.builtin".help_tags()<CR>')
+key_mapper('', '<C-c>', ':lua require"telescope.builtin".buffers()<CR>')
+key_mapper('', '<C-g>', ':lua require"telescope.builtin".grep_string({ search=vim.fn.input("Grep for >") })<CR>')
+key_mapper('', '<C-e>', ':lua require"telescope.builtin".lsp_workspace_diagnostics()<CR>')
+key_mapper('', '<leader>fa', ':lua require"telescope.builtin".lsp_range_code_actions()<CR>')
+key_mapper('', '<leader>gc', ':lua require"telescope.builtin".git_commits()<CR>')
+key_mapper('', '<leader>gb', ':lua require"telescope.builtin".git_branches()<CR>')
+key_mapper('', '<leader>gs', ':lua require"telescope.builtin".git_status()<CR>')
+key_mapper('', '<leader>o', ':lua require"telescope.builtin".oldfiles()<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
 
@@ -162,6 +162,12 @@ require('telescope').setup{
         ["<C-k>"] = actions.move_selection_previous,
         ["<C-p>"] = actions.move_selection_next,
         ["<C-j>"] = actions.move_selection_next,
+      },
+      n = {
+        ["<C-n>"] = actions.move_selection_previous,
+        ["<C-k>"] = actions.move_selection_previous,
+        ["<C-p>"] = actions.move_selection_next,
+        ["<C-j>"] = actions.move_selection_next,
       }
     },
     layout_config = {
@@ -173,12 +179,38 @@ require('telescope').setup{
       },
       prompt_position = "top",
     },
-    file_ignore_patterns = { "node_modules" },
+    file_ignore_patterns = { "node_modules" }, 
     sorting_strategy = "ascending"
   },
-  oldfiles = {
-    include_current_session = true,
-    cwd_only = false 
+  pickers = {
+    live_grep = {
+      previewer = false
+    },
+    find_files = {
+      previewer = false,
+    },
+    oldfiles = {
+      include_current_session = true,
+      sort_lastused = true,
+      theme = "dropdown",
+      previewer = false,
+      cwd_only = false 
+    },
+    buffers = {
+      sort_lastused = true,
+      theme = "dropdown",
+      previewer = false,
+      mappings = {
+        i = {
+          ["<c-d>"] = require("telescope.actions").delete_buffer,
+          -- or right hand side can also be a the name of the action as string
+          ["<c-d>"] = "delete_buffer",
+        },
+        n = {
+          ["<c-d>"] = require("telescope.actions").delete_buffer,
+        }
+      }
+    }
   },
   extensions = {
     fzf = {
@@ -335,7 +367,6 @@ require('nvim-autopairs').setup({
 
 --
 --AutoSave
---
 
 require('autosave').setup({
   enabled = true,
