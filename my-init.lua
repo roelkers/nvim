@@ -18,7 +18,7 @@ vim.wo.number = true
 --vim.wo.relativenumber = true
 vim.wo.wrap = false
 vim.g.mapleader = " "
-vim.g.colors_name = 'gloombuddy'
+vim.g.colors_name = 'aurora'
 vim.o.completeopt = 'menuone,noselect'
 vim.g.rnvimr_ex_enable = 1
 vim.g.rnvimr_draw_border = 1
@@ -113,8 +113,9 @@ packer.startup(function()
   use 'sheerun/vim-polyglot'
 
   --theme
-  use 'tjdevries/colorbuddy.nvim'
-  use 'bkegley/gloombuddy'
+  --use 'tjdevries/colorbuddy.nvim'
+
+  use 'christianchiarulli/nvcode-color-schemes.vim' 
   
   use 'kyazdani42/nvim-web-devicons'
   
@@ -367,8 +368,8 @@ require('nvim-autopairs').setup({
 
 --
 --AutoSave
+--
 
 require('autosave').setup({
-  enabled = true,
-  execution_message = ""
+  enabled = true
 })
