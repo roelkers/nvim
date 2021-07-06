@@ -215,7 +215,7 @@ vim.cmd([[
   augroup gitsigncolors
     autocmd ColorScheme * hi GitSignsChange guibg=#232731 guifg=#ebcb8b
     autocmd ColorScheme * hi GitSignsAdd guibg=#232731 guifg=#a3be8c
-    autocmd ColorScheme * hi GitSignsRemove guibg=#232731 guifg=#bf616a
+    autocmd ColorScheme * hi GitSignsDelete guibg=#232731 guifg=#bf616a
   augroup END
 ]])
 
