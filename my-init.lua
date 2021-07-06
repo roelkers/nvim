@@ -26,6 +26,7 @@ vim.g.rnvimr_pick_enable = 1
 vim.g.rnvimr_bw_enable = 1
 vim.g.noswapfile = true
 vim.g.mouse = n
+vim.g.encoding = "UTF-8"
 
 --
 --Mappings
@@ -100,10 +101,7 @@ local fn = vim.fn
 
 local packer = require'packer'
 local util = require'packer.util'
---packer.init({
---  package_root = util.join_paths(vim.fn.stdpath('data'), 'site', 'pack')
---})
---- startup and add configure plugins
+
 packer.startup(function()
   local use = use
   
@@ -142,12 +140,11 @@ packer.startup(function()
 
   use 'Pocco81/AutoSave.nvim'
   
-  use { 
-    'glepnir/galaxyline.nvim',
-    branch = 'main'
-  }
+  use { 'glepnir/galaxyline.nvim' }
 
   use 'phaazon/hop.nvim'
+
+  use 'rktjmp/lush.nvim'
  end
 )
 
@@ -357,8 +354,9 @@ require('gitsigns').setup({
     linehl = false,
     current_line_blame = true,
     current_line_blame_delay = 500,
-    word_diff = true
+    word_diff = false
 })
+
 --
 --Autopairs
 --
@@ -372,4 +370,157 @@ require('nvim-autopairs').setup({
 
 require('autosave').setup({
   enabled = true
+})
+
+--
+--Terminal
+--
+
+vim.cmd([[
+  augroup neovim_terminal
+    autocmd!
+    " Enter Terminal-mode (insert) automatically
+    autocmd TermOpen * startinsert
+    " Disables number lines on terminal buffers
+    autocmd TermOpen * :set nonumber norelativenumber
+    " allows you to use Ctrl-c on terminal window
+    autocmd TermOpen * nnoremap <buffer> <C-c> i<C-c>
+augroup END
+]])
+
+
+--
+--Statusline
+--
+
+local gl = require('galaxyline')
+local hsl = require('lush').hsl
+local gls = gl.section
+local condition = require('galaxyline.condition')
+
+table.insert(gls.left, {
+  SFileName = {
+    provider = "SFileName",
+    condition = condition.buffer_not_empty,
+
+    highlight = "StatusLineNC",
+  }
+})
+
+table.insert(gls.left, {
+  GitIcon = {
+    provider = function()
+      return "  "
+    end,
+    condition = condition.check_git_workspace,
+    separator = " ",
+    separator_highlight = "StatusLineSeparator",
+    highlight = "StatusLineGit",
+  },
+})
+
+table.insert(gls.left, {
+  GitBranch = {
+    provider = "GitBranch",
+    condition = condition.check_git_workspace,
+    separator = " ",
+    separator_highlight = "StatusLineSeparator",
+    highlight = "StatusLineNC",
+  },
+})
+
+table.insert(gls.left, {
+  DiffAdd = {
+    provider = "DiffAdd",
+    condition = condition.hide_in_width,
+    icon = "  ",
+    highlight = "StatusLineGitAdd",
+  },
+})
+
+table.insert(gls.left, {
+  DiffModified = {
+    provider = "DiffModified",
+    condition = condition.hide_in_width,
+    icon = " 柳",
+    highlight = "StatusLineGitChange",
+  },
+})
+
+table.insert(gls.left, {
+  DiffRemove = {
+    provider = "DiffRemove",
+    condition = condition.hide_in_width,
+    icon = "  ",
+    highlight = "StatusLineGitDelete",
+  },
+})
+
+table.insert(gls.right, {
+  DiagnosticError = {
+    provider = "DiagnosticError",
+    icon = "  ",
+    highlight = "StatusLineLspDiagnosticsError",
+  },
+})
+table.insert(gls.right, {
+  DiagnosticWarn = {
+    provider = "DiagnosticWarn",
+    icon = "  ",
+
+    highlight = "StatusLineLspDiagnosticsWarning",
+  },
+})
+
+table.insert(gls.right, {
+  DiagnosticInfo = {
+    provider = "DiagnosticInfo",
+    icon = "  ",
+
+    highlight = "StatusLineLspDiagnosticsInformation",
+  },
+})
+
+table.insert(gls.right, {
+  DiagnosticHint = {
+    provider = "DiagnosticHint",
+    icon = "  ",
+
+    highlight = "StatusLineLspDiagnosticsHint",
+  },
+})
+
+
+table.insert(gls.right, {
+  PerCent = {
+    provider = "LinePercent",
+    separator = " ",
+    separator_highlight = "StatusLineSeparator",
+    highlight = "StatusLineNC",
+  },
+})
+
+table.insert(gls.right, {
+  DiagnosticError = {
+    provider = "DiagnosticError",
+    icon = "  ",
+    highlight = "StatusLineLspDiagnosticsError",
+  },
+})
+table.insert(gls.right, {
+  DiagnosticWarn = {
+    provider = "DiagnosticWarn",
+    icon = "  ",
+
+    highlight = "StatusLineLspDiagnosticsWarning",
+  },
+})
+
+table.insert(gls.right, {
+  DiagnosticInfo = {
+    provider = "DiagnosticInfo",
+    icon = "  ",
+
+    highlight = "StatusLineLspDiagnosticsInformation",
+  },
 })
