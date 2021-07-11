@@ -39,6 +39,7 @@ vim.g.noswapfile = true
 vim.g.mouse = n
 vim.g.encoding = "UTF-8"
 vim.g.colors_name = 'aurora'
+vim.g.dashboard_default_executive = 'telescope'
 
 --
 --Mappings
@@ -97,6 +98,8 @@ key_mapper('', '<leader>gs', ':lua require"telescope.builtin".git_status()<CR>')
 key_mapper('', '<leader>o', ':lua require"telescope.builtin".oldfiles()<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
+key_mapper('n', '<leader>dv', ':DiffviewOpen<CR>')
+key_mapper('n', '<leader>dc', ':DiffviewClose<CR>')
 
 --
 --Auto commands
@@ -157,6 +160,8 @@ packer.startup(function()
 
   use { 'glepnir/galaxyline.nvim' }
 
+  use 'sindrets/diffview.nvim'
+
   use {
     'lewis6991/gitsigns.nvim',
     requires = {
@@ -164,6 +169,7 @@ packer.startup(function()
     }
   }
 
+  use 'glepnir/dashboard-nvim'
  end
 )
 
@@ -216,6 +222,7 @@ vim.cmd([[
     autocmd ColorScheme * hi GitSignsChange guibg=#232731 guifg=#ebcb8b
     autocmd ColorScheme * hi GitSignsAdd guibg=#232731 guifg=#a3be8c
     autocmd ColorScheme * hi GitSignsDelete guibg=#232731 guifg=#bf616a
+    autocmd ColorScheme * hi GitSignsCurrentLineBlame guifg=#3b4048
   augroup END
 ]])
 
@@ -570,7 +577,6 @@ table.insert(gls.right, {
   DiagnosticWarn = {
     provider = "DiagnosticWarn",
     icon = "  ",
-
     highlight = "StatusLineLspDiagnosticsWarning",
   },
 })
@@ -579,8 +585,27 @@ table.insert(gls.right, {
   DiagnosticInfo = {
     provider = "DiagnosticInfo",
     icon = "  ",
-
     highlight = "StatusLineLspDiagnosticsInformation",
   },
 })
+
+--
+--Dashboard
+--
+--
+
+vim.g.dashboard_custom_header = {
+  ' ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗',
+  ' ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║',
+  ' ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║',
+  ' ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║',
+  ' ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║',
+  ' ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝'
+} 
+
+--vim.g.dashboard_custom_footer = 'Have fun!'
+vim.cmd[[
+  autocmd ColorScheme * hi DashboardHeader guibg=#232731 guifg=#ebcb8b
+]]
+vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
 
