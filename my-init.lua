@@ -100,6 +100,7 @@ key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
 key_mapper('n', '<leader>dv', ':DiffviewOpen<CR>')
 key_mapper('n', '<leader>dc', ':DiffviewClose<CR>')
+key_mapper('n', '<leader>xx', ':TroubleToggle<CR>')
 
 --
 --Auto commands
@@ -138,6 +139,7 @@ packer.startup(function()
   use 'hrsh7th/nvim-compe'
   use 'hrsh7th/vim-vsnip'
 
+  use { 'folke/trouble.nvim' }
 
   use 'nvim-lua/popup.nvim'
   use 'nvim-lua/plenary.nvim'
@@ -231,6 +233,7 @@ vim.cmd([[
 --
 
 local actions = require('telescope.actions')
+local trouble = require("trouble.providers.telescope")
 require('telescope').setup({
   defaults = {
     mappings = {
@@ -239,12 +242,14 @@ require('telescope').setup({
         ["<C-k>"] = actions.move_selection_previous,
         ["<C-p>"] = actions.move_selection_next,
         ["<C-j>"] = actions.move_selection_next,
+        ["<c-t>"] = trouble.open_with_trouble,
       },
       n = {
         ["<C-n>"] = actions.move_selection_previous,
         ["<C-k>"] = actions.move_selection_previous,
         ["<C-p>"] = actions.move_selection_next,
         ["<C-j>"] = actions.move_selection_next,
+        ["<c-t>"] = trouble.open_with_trouble,
       }
     },
     layout_config = {
