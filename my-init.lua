@@ -101,6 +101,7 @@ key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
 key_mapper('n', '<leader>dv', ':DiffviewOpen<CR>')
 key_mapper('n', '<leader>dc', ':DiffviewClose<CR>')
 key_mapper('n', '<leader>xx', ':TroubleToggle<CR>')
+key_mapper('n', '<leader>gg', ':LazyGit<CR>')
 
 --
 --Auto commands
@@ -172,6 +173,7 @@ packer.startup(function()
   }
 
   use 'glepnir/dashboard-nvim'
+  use 'kdheepak/lazygit.nvim'
  end
 )
 
