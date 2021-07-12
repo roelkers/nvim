@@ -8,6 +8,13 @@ vim.cmd([[
     autocmd ColorScheme * call v:lua.vim.lsp.diagnostic._define_default_signs_and_highlights()
   augroup END
 ]])
+-- Highlight current window
+--vim.cmd([[
+--  augroup statuslineBG 
+--    autocmd ColorScheme * highlight StatusLine ctermfg=#ffffff ctermbg=#232731
+--    autocmd ColorScheme * highlight StatusLineNC ctermfg=#ffffff  ctermbg=#444444
+--  augroup END
+--]])
 
 
 --
@@ -40,6 +47,7 @@ vim.g.mouse = n
 vim.g.encoding = "UTF-8"
 vim.g.colors_name = 'aurora'
 vim.g.dashboard_default_executive = 'telescope'
+vim.o.clipboard = "unnamedplus"
 
 --
 --Mappings
@@ -78,7 +86,6 @@ key_mapper('n', 'gw', ':lua vim.lsp.buf.document_symbol()<CR>')
 key_mapper('n', 'gW', ':lua vim.lsp.buf.workspace_symbol()<CR>')
 key_mapper('n', 'gr', ':lua vim.lsp.buf.references()<CR>')
 key_mapper('n', 'gt', ':lua vim.lsp.buf.type_definition()<CR>')
-key_mapper('n', 'gr', ':lua vim.lsp.buf.references()<CR>')
 key_mapper('n', 'K', ':lua vim.lsp.buf.hover()<CR>')
 key_mapper('n', '<leader>af', ':lua vim.lsp.buf.code_action()<CR>')
 key_mapper('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>')
@@ -102,12 +109,6 @@ key_mapper('n', '<leader>dv', ':DiffviewOpen<CR>')
 key_mapper('n', '<leader>dc', ':DiffviewClose<CR>')
 key_mapper('n', '<leader>xx', ':TroubleToggle<CR>')
 key_mapper('n', '<leader>gg', ':LazyGit<CR>')
-
---
---Auto commands
---
-
---vim.api.nvim_command[[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
 
 --
 --Plugins
@@ -245,6 +246,9 @@ require('telescope').setup({
         ["<C-p>"] = actions.move_selection_next,
         ["<C-j>"] = actions.move_selection_next,
         ["<c-t>"] = trouble.open_with_trouble,
+        ["<c-d>"] = actions.move_selection_next + actions.move_selection_next + actions.move_selection_next + actions.move_selection_next,
+        ["<c-u>"] = actions.move_selection_previous + actions.move_selection_previous + actions.move_selection_previous + actions.move_selection_previous,
+        ["<c-t>"] = trouble.open_with_trouble,
       },
       n = {
         ["<C-n>"] = actions.move_selection_previous,
@@ -252,6 +256,8 @@ require('telescope').setup({
         ["<C-p>"] = actions.move_selection_next,
         ["<C-j>"] = actions.move_selection_next,
         ["<c-t>"] = trouble.open_with_trouble,
+        ["<c-d>"] = actions.move_selection_next + actions.move_selection_next + actions.move_selection_next + actions.move_selection_next,
+        ["<c-u>"] = actions.move_selection_previous + actions.move_selection_previous + actions.move_selection_previous + actions.move_selection_previous,
       }
     },
     layout_config = {
