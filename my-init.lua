@@ -45,7 +45,6 @@ vim.g.rnvimr_bw_enable = 1
 vim.g.noswapfile = true
 vim.g.mouse = n
 vim.g.encoding = "UTF-8"
-vim.g.colors_name = 'aurora'
 vim.g.dashboard_default_executive = 'telescope'
 vim.o.clipboard = "unnamedplus"
 
@@ -622,3 +621,4 @@ vim.cmd[[
 ]]
 vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
 
+vim.cmd("colorscheme aurora")
