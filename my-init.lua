@@ -108,6 +108,13 @@ key_mapper('n', '<leader>dv', ':DiffviewOpen<CR>')
 key_mapper('n', '<leader>dc', ':DiffviewClose<CR>')
 key_mapper('n', '<leader>xx', ':TroubleToggle<CR>')
 key_mapper('n', '<leader>gg', ':LazyGit<CR>')
+key_mapper('i', '<C-BS>', '<C-w>')
+key_mapper('i', '<C-h>', '<C-w>')
+
+--key_mapper('n', '<leader>cw', ':! prettiercheck www<CR>')
+--key_mapper('n', '<leader>ca', ':! prettiercheck api<CR>')
+--key_mapper('n', '<leader>pw', ':! prettierwrite www<CR>')
+--key_mapper('n', '<leader>pa', ':! prettierwrite api<CR>')
 
 --
 --Plugins
@@ -139,6 +146,7 @@ packer.startup(function()
 
   use 'hrsh7th/nvim-compe'
   use 'hrsh7th/vim-vsnip'
+  use 'rafamadriz/friendly-snippets'
 
   use { 'folke/trouble.nvim' }
 
@@ -177,6 +185,9 @@ packer.startup(function()
 
   use 'jose-elias-alvarez/null-ls.nvim'
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
+
+  use 'tpope/vim-surround'
+  use 'tpope/vim-commentary'
  end
 )
 
@@ -381,6 +392,35 @@ end
 
 local default_config = {
   on_attach = custom_on_attach,
+  handlers = {
+    ["textDocument/definition"] = function(_, method, result)
+      if result == nil or vim.tbl_isempty(result) then
+         local _ = vim.lsp.log.info() and vim.lsp.log.info(method, 'No location found')
+         return nil
+      end
+
+
+      if vim.tbl_islist(result) then
+         vim.lsp.util.jump_to_location(result[1])
+         if #result > 1 then
+            local isReactDTs = false
+            for key, value in pairs(result) do
+               if string.match(value.uri, "react/index.d.ts") then
+                  isReactDTs = true
+			      break
+               end
+            end
+            if not isReactDTs then
+               vim.lsp.util.set_qflist(util.locations_to_items(result))
+               vim.api.nvim_command("copen")
+               vim.api.nvim_command("wincmd p")
+            end
+         end
+      else
+         vim.lsp.util.jump_to_location(result)
+      end
+   end
+  }
 }
 -- setup language servers here
 lspconfig.tsserver.setup(default_config)
