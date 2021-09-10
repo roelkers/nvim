@@ -148,6 +148,7 @@ packer.startup(function()
   use "hrsh7th/cmp-nvim-lsp"
   use "hrsh7th/cmp-path"
   use "hrsh7th/cmp-nvim-lua"
+  use 'hrsh7th/cmp-vsnip'
   use 'hrsh7th/vim-vsnip'
   use "hrsh7th/nvim-cmp"
   use 'rafamadriz/friendly-snippets'
@@ -477,7 +478,7 @@ local t = function(str)
 end
 local cmp = require'cmp'
 cmp.setup({
-  snippet = {
+ snippet = {
     expand = function(args)
       vim.fn["vsnip#anonymous"](args.body)
     end,
@@ -496,6 +497,8 @@ cmp.setup({
         vim.fn.feedkeys(t "<C-n>", "n")
       elseif check_backspace() then
         vim.fn.feedkeys(t "<Tab>", "n")
+      elseif vim.fn['vsnip#available']() == 1 then
+        vim.fn.feedkeys(t '<Plug>(vsnip-expand-or-jump)', "")
       else
         vim.fn.feedkeys(t "<Tab>", "n")
       end
