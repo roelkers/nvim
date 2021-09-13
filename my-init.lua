@@ -99,8 +99,9 @@ key_mapper('', '<C-e>', ':lua require"telescope.builtin".lsp_workspace_diagnosti
 key_mapper('', '<leader>fa', ':lua require"telescope.builtin".lsp_range_code_actions()<CR>')
 key_mapper('', '<leader>gc', ':lua require"telescope.builtin".git_commits()<CR>')
 key_mapper('', '<leader>gb', ':lua require"telescope.builtin".git_branches()<CR>')
-key_mapper('', '<leader>gs', ':lua require"telescope.builtin".git_status()<CR>')
+key_mapper('', '<C-s>', ':lua require"telescope.builtin".git_status()<CR>')
 key_mapper('', '<leader>o', ':lua require"telescope.builtin".oldfiles()<CR>')
+key_mapper('', '<leader>r', ':lua require"telescope.builtin".pickers()<CR>')
 key_mapper('', '<leader>c', ':cclose<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
@@ -190,6 +191,7 @@ packer.startup(function()
 
   use 'jose-elias-alvarez/null-ls.nvim'
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
+  use 'RRethy/nvim-treesitter-textsubjects'
 
   use 'tpope/vim-surround'
   use 'tpope/vim-commentary'
@@ -462,6 +464,19 @@ require("null-ls").setup({
 require('lspconfig')["null-ls"].setup {}
 
 --
+--Treesitter Test Subjects
+--
+require'nvim-treesitter.configs'.setup {
+    textsubjects = {
+        enable = true,
+        keymaps = {
+            [','] = 'textsubjects-smart',
+            [';'] = 'textsubjects-container-outer',
+        }
+    },
+}
+
+--
 --Galaxyline
 --
 local gl = require('galaxyline') 
@@ -509,6 +524,8 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if vim.fn.pumvisible() == 1 then
         vim.fn.feedkeys(t "<C-p>", "n")
+      elseif vim.fn['vsnip#available']() == 1 then
+        vim.fn.feedkeys(t '<Plug>(vsnip-prev)', "")
       else
         fallback()
       end
@@ -714,5 +731,5 @@ vim.cmd[[
 ]]
 vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
 
-vim.cmd("colorscheme aurora")
+vim.cmd("colorscheme lunar")
 vim.cmd("set noequalalways")
