@@ -99,7 +99,7 @@ key_mapper('', '<C-e>', ':lua require"telescope.builtin".lsp_workspace_diagnosti
 key_mapper('', '<leader>fa', ':lua require"telescope.builtin".lsp_range_code_actions()<CR>')
 key_mapper('', '<leader>gc', ':lua require"telescope.builtin".git_commits()<CR>')
 key_mapper('', '<leader>gb', ':lua require"telescope.builtin".git_branches()<CR>')
-key_mapper('', '<C-s>', ':lua require"telescope.builtin".git_status()<CR>')
+key_mapper('', '<C-x>', ':lua require"telescope.builtin".git_status()<CR>')
 key_mapper('', '<leader>o', ':lua require"telescope.builtin".oldfiles()<CR>')
 key_mapper('', '<leader>r', ':lua require"telescope.builtin".pickers()<CR>')
 key_mapper('', '<leader>c', ':cclose<CR>')
@@ -363,7 +363,7 @@ local function custom_on_attach(client)
           same_file = 1, -- add to existing import statement
       },
       import_all_scan_buffers = 100,
-      import_all_select_source = false,
+      import_all_select_source = true,
 
       -- eslint
       eslint_enable_code_actions = true,
@@ -399,35 +399,6 @@ end
 
 local default_config = {
   on_attach = custom_on_attach,
-  handlers = {
-    ["textDocument/definition"] = function(_, method, result)
-      if result == nil or vim.tbl_isempty(result) then
-         local _ = vim.lsp.log.info() and vim.lsp.log.info(method, 'No location found')
-         return nil
-      end
-
-
-      if vim.tbl_islist(result) then
-         vim.lsp.util.jump_to_location(result[1])
-         if #result > 1 then
-            local isReactDTs = false
-            for key, value in pairs(result) do
-               if string.match(value.uri, "react/index.d.ts") then
-                  isReactDTs = true
-			      break
-               end
-            end
-            if not isReactDTs then
-               vim.lsp.util.set_qflist(util.locations_to_items(result))
-               vim.api.nvim_command("copen")
-               vim.api.nvim_command("wincmd p")
-            end
-         end
-      else
-         vim.lsp.util.jump_to_location(result)
-      end
-   end
-  }
 }
 -- setup language servers here
 lspconfig.tsserver.setup(default_config)
@@ -444,7 +415,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 --
 --Formatting
 --
-require("null-ls").setup({
+require("null-ls").config({
     sources = {
       require("null-ls").builtins.formatting.prettier.with {
         filetypes = {
@@ -510,7 +481,7 @@ cmp.setup({
     ["<Tab>"] = cmp.mapping(function()
       if vim.fn.pumvisible() == 1 then
         vim.fn.feedkeys(t "<C-n>", "n")
-      elseif check_backspace() then
+      elseif check_back_space() then
         vim.fn.feedkeys(t "<Tab>", "n")
       elseif vim.fn['vsnip#available']() == 1 then
         vim.fn.feedkeys(t '<Plug>(vsnip-expand-or-jump)', "")
@@ -731,5 +702,5 @@ vim.cmd[[
 ]]
 vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
 
-vim.cmd("colorscheme lunar")
+vim.cmd("colorscheme onedark")
 vim.cmd("set noequalalways")
