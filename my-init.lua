@@ -105,8 +105,6 @@ key_mapper('', '<leader>r', ':lua require"telescope.builtin".pickers()<CR>')
 key_mapper('', '<leader>c', ':cclose<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
-key_mapper('n', '<leader>dv', ':DiffviewOpen<CR>')
-key_mapper('n', '<leader>dc', ':DiffviewClose<CR>')
 key_mapper('n', '<leader>xx', ':TroubleToggle<CR>')
 key_mapper('n', '<leader>gg', ':LazyGit<CR>')
 key_mapper('i', '<C-BS>', '<C-w>')
@@ -176,8 +174,6 @@ packer.startup(function()
   use 'rktjmp/lush.nvim'
 
   use { 'glepnir/galaxyline.nvim' }
-
-  use 'sindrets/diffview.nvim'
 
   use {
     'lewis6991/gitsigns.nvim',
@@ -455,13 +451,7 @@ local gl = require('galaxyline')
 ----
 ---- Cmp
 ----
-local check_back_space = function()
-    local col = vim.fn.col('.') - 1
-    return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
-end
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
+
 local cmp = require'cmp'
 cmp.setup({
  snippet = {
@@ -478,32 +468,8 @@ cmp.setup({
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     }),
-    ["<Tab>"] = cmp.mapping(function()
-      if vim.fn.pumvisible() == 1 then
-        vim.fn.feedkeys(t "<C-n>", "n")
-      elseif check_back_space() then
-        vim.fn.feedkeys(t "<Tab>", "n")
-      elseif vim.fn['vsnip#available']() == 1 then
-        vim.fn.feedkeys(t '<Plug>(vsnip-expand-or-jump)', "")
-      else
-        vim.fn.feedkeys(t "<Tab>", "n")
-      end
-    end, {
-      "i",
-      "s",
-    }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-      if vim.fn.pumvisible() == 1 then
-        vim.fn.feedkeys(t "<C-p>", "n")
-      elseif vim.fn['vsnip#available']() == 1 then
-        vim.fn.feedkeys(t '<Plug>(vsnip-prev)', "")
-      else
-        fallback()
-      end
-    end, {
-      "i",
-      "s",
-    }),
+    ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s", }),
+    ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s", }),
   },
   sources = {
     { name = "nvim_lsp" },
