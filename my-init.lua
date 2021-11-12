@@ -499,6 +499,12 @@ require('autosave').setup({
 })
 
 --
+--Hop
+--
+--
+require('hop').setup({})
+
+--
 --Terminal
 --
 
@@ -670,3 +676,5 @@ vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
 
 vim.cmd("colorscheme onedark")
 vim.cmd("set noequalalways")
+
+--vim.lsp.set_log_level("debug")
