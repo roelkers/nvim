@@ -157,7 +157,7 @@ packer.startup(function()
   use 'nvim-lua/popup.nvim'
   use 'nvim-lua/plenary.nvim'
   use 'nvim-lua/telescope.nvim'
-  use 'jremmen/vim-ripgrep'
+  use { 'miyase256/vim-ripgrep', branch = 'fix/remove-complete-from-RgRoot' }
   use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
 
   use 'kevinhwang91/rnvimr'
