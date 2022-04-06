@@ -2,11 +2,11 @@
 --LSP colors
 --
 
-vim.cmd([[
-  augroup lspcolors
-    autocmd ColorScheme * call v:lua.vim.lsp.diagnostic._define_default_signs_and_highlights()
-  augroup END
-]])
+-- vim.cmd([[
+--   augroup lspxcolors
+--     autocmd ColorScheme * call v:lua.vim.lsp.diagnostic._define_default_signs_and_highlights()
+--   augroup END
+-- ]])
 -- Highlight current window
 --vim.cmd([[
 --  augroup statuslineBG 
@@ -14,6 +14,14 @@ vim.cmd([[
 --    autocmd ColorScheme * highlight StatusLineNC ctermfg=#ffffff  ctermbg=#444444
 --  augroup END
 --]])
+--vim.cmd([[
+  -- augroup highlightLspError 
+  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineError ctermfg=#ff0000 ctermbg=#232731
+  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineHint ctermfg=#ffffff ctermbg=#232731
+  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineInfo ctermfg=#ffffff ctermbg=#232731
+  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineWarning ctermfg=#ffffff ctermbg=#232731
+  -- augroup END
+  -- ]])
 
 
 --
@@ -234,8 +242,38 @@ require('gitsigns').setup({
     numhl = false,
     linehl = false,
     current_line_blame = true,
-    current_line_blame_delay = 500,
-    word_diff = false
+    current_line_blame_opts = {
+      delay = 500,
+    },
+    word_diff = false,
+    on_attach = function(bufnr)
+      local function map(mode, lhs, rhs, opts)
+        opts = vim.tbl_extend('force', {noremap = true, silent = true}, opts or {})
+        vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+      end
+      -- Navigation
+      map('n', ']c', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", {expr=true})
+      map('n', '[c', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", {expr=true})
+
+      -- Actions
+      map('n', '<leader>hs', ':Gitsigns stage_hunk<CR>')
+      map('v', '<leader>hs', ':Gitsigns stage_hunk<CR>')
+      map('n', '<leader>hr', ':Gitsigns reset_hunk<CR>')
+      map('v', '<leader>hr', ':Gitsigns reset_hunk<CR>')
+      map('n', '<leader>hS', '<cmd>Gitsigns stage_buffer<CR>')
+      map('n', '<leader>hu', '<cmd>Gitsigns undo_stage_hunk<CR>')
+      map('n', '<leader>hR', '<cmd>Gitsigns reset_buffer<CR>')
+      map('n', '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>')
+      map('n', '<leader>hb', '<cmd>lua require"gitsigns".blame_line{full=true}<CR>')
+      map('n', '<leader>tb', '<cmd>Gitsigns toggle_current_line_blame<CR>')
+      map('n', '<leader>hd', '<cmd>Gitsigns diffthis<CR>')
+      map('n', '<leader>hD', '<cmd>lua require"gitsigns".diffthis("~")<CR>')
+      map('n', '<leader>td', '<cmd>Gitsigns toggle_deleted<CR>')
+
+      -- Text object
+      map('o', 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+      map('x', 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+    end
 })
 
 vim.cmd([[
@@ -347,6 +385,7 @@ local function custom_on_attach(client)
 
   -- defaults
   ts_utils.setup {
+      debug = true,
       disable_commands = false,
       enable_import_on_completion = false,
 
@@ -411,8 +450,9 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 --
 --Formatting
 --
-require("null-ls").config({
+require("null-ls").setup({
     sources = {
+      -- require('null-ls').builtins.diagnostics.eslint,
       require("null-ls").builtins.formatting.prettier.with {
         filetypes = {
           "typescriptreact",
@@ -428,7 +468,6 @@ require("null-ls").config({
       }
     }
 })
-require('lspconfig')["null-ls"].setup {}
 
 --
 --Treesitter Test Subjects
@@ -674,7 +713,7 @@ vim.cmd[[
 ]]
 vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
 
-vim.cmd("colorscheme onedark")
+vim.cmd("colorscheme snazzy")
 vim.cmd("set noequalalways")
 
 --vim.lsp.set_log_level("debug")
