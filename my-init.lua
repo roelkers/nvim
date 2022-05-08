@@ -110,6 +110,8 @@ key_mapper('', '<leader>gb', ':lua require"telescope.builtin".git_branches()<CR>
 key_mapper('', '<C-x>', ':lua require"telescope.builtin".git_status()<CR>')
 key_mapper('', '<leader>o', ':lua require"telescope.builtin".oldfiles()<CR>')
 key_mapper('', '<leader>r', ':lua require"telescope.builtin".pickers()<CR>')
+key_mapper('', '<leader>h', ':lua require"telescope.builtin".search_history()<CR>')
+key_mapper('', '<leader>p', ':lua require"telescope.builtin".resume()<CR>')
 key_mapper('', '<leader>c', ':cclose<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
@@ -181,7 +183,7 @@ packer.startup(function()
 
   use 'rktjmp/lush.nvim'
 
-  use { 'glepnir/galaxyline.nvim' }
+  use { 'NTBBloodbath/galaxyline.nvim' }
 
   use {
     'lewis6991/gitsigns.nvim',
@@ -330,12 +332,18 @@ require('telescope').setup({
     oldfiles = {
       include_current_session = true,
       sort_lastused = true,
-      theme = "dropdown",
-      cwd_only = false 
+      cwd_only = false,
+      prompt_title = false,
+      previewer = false,
+      results_height = 20,
+      winblend = 20
     },
     buffers = {
       sort_lastused = true,
-      theme = "dropdown",
+      prompt_title = false,
+      previewer = false,
+      results_height = 20,
+      winblend = 20,
       mappings = {
         i = {
           ["<c-d>"] = require("telescope.actions").delete_buffer,
@@ -385,7 +393,7 @@ local function custom_on_attach(client)
 
   -- defaults
   ts_utils.setup {
-      debug = true,
+      debug = false,
       disable_commands = false,
       enable_import_on_completion = false,
 
@@ -429,7 +437,7 @@ local function custom_on_attach(client)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
 
-  --vim.cmd("autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()")
+  -- vim.cmd("autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()")
 end
 
 local default_config = {
@@ -451,8 +459,10 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 --Formatting
 --
 require("null-ls").setup({
+    debug = true,
     sources = {
-      -- require('null-ls').builtins.diagnostics.eslint,
+      require('null-ls').builtins.diagnostics.eslint,
+      require('null-ls').builtins.code_actions.eslint,
       require("null-ls").builtins.formatting.prettier.with {
         filetypes = {
           "typescriptreact",
@@ -465,7 +475,17 @@ require("null-ls").setup({
           "css",
           "html",
         },
-      }
+      },
+      -- on_attach = function(client)
+      --   if client.resolved_capabilities.document_formatting then
+      --       vim.cmd([[
+      --       augroup LspFormatting
+      --           autocmd! * <buffer>
+      --           autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
+      --       augroup END
+      --       ]])
+      --   end
+      -- end,
     }
 })
 
