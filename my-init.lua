@@ -386,7 +386,7 @@ configs.setup {
 --LSP
 --
 local lspconfig = require'lspconfig'
-local function custom_on_attach(client)
+local function custom_on_attach(client, bufnr)
   print('Attaching to ' .. client.name)
   client.resolved_capabilities.document_formatting = false
   local ts_utils = require("nvim-lsp-ts-utils")
