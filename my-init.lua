@@ -373,7 +373,7 @@ require('telescope').load_extension('fzf')
 --
 local configs = require'nvim-treesitter.configs'
 configs.setup {
-  ensure_installed = "maintained",
+  ensure_installed = "all",
   highlight = {
     enable = true,
   },
