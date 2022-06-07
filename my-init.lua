@@ -172,7 +172,7 @@ packer.startup(function()
 
   use 'kevinhwang91/rnvimr'
 
-  use 'ygm2/rooter.nvim'
+  use 'ahmedkhalf/project.nvim'
 
   use 'windwp/nvim-autopairs'
   use 'windwp/nvim-ts-autotag'
@@ -330,8 +330,7 @@ require('telescope').setup({
   },
   pickers = {
     oldfiles = {
-      include_current_session = true,
-      sort_lastused = true,
+      sort_mru = true,
       cwd_only = false,
       prompt_title = false,
       previewer = false,
@@ -339,7 +338,9 @@ require('telescope').setup({
       winblend = 20
     },
     buffers = {
-      sort_lastused = true,
+      sort_mru = true,
+      ignore_current_buffer = true,
+      sorter = require'telescope.sorters'.get_substr_matcher(),
       prompt_title = false,
       previewer = false,
       results_height = 20,
@@ -347,8 +348,6 @@ require('telescope').setup({
       mappings = {
         i = {
           ["<c-d>"] = require("telescope.actions").delete_buffer,
-          -- or right hand side can also be a the name of the action as string
-          ["<c-d>"] = "delete_buffer",
         },
         n = {
           ["<c-d>"] = require("telescope.actions").delete_buffer,
