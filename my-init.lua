@@ -96,9 +96,9 @@ key_mapper('n', 'K', ':lua vim.lsp.buf.hover()<CR>')
 key_mapper('n', '<leader>af', ':lua vim.lsp.buf.code_action()<CR>')
 key_mapper('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>')
 key_mapper('n', '<leader>i', ':lua vim.lsp.buf.formatting_sync()<CR>')
-key_mapper('n', '<leader>dn', ':lua vim.lsp.diagnostic.goto_next()<CR>')
-key_mapper('n', '<leader>dp', ':lua vim.lsp.diagnostic.goto_prev()<CR>')
-key_mapper('', '<C-p>', ':lua require"telescope.builtin".find_files({ search_dirs = { "/home/rufus/Dev" } })<CR>')
+key_mapper('n', '<leader>dn', ':lua vim.diagnostic.goto_next()<CR>')
+key_mapper('n', '<leader>dp', ':lua vim.diagnostic.goto_prev()<CR>')
+key_mapper('', '<C-p>', ':lua require"telescope.builtin".find_files({ search_dirs = { "/home/rufus/Dev", "/Users/oelkersr/Dev" } })<CR>')
 key_mapper('', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
 key_mapper('', '<leader>fh', ':lua require"telescope.builtin".help_tags()<CR>')
 key_mapper('', '<C-c>', ':lua require"telescope.builtin".buffers()<CR>')
@@ -168,7 +168,7 @@ packer.startup(function()
   use 'nvim-lua/plenary.nvim'
   use 'nvim-lua/telescope.nvim'
   use { 'miyase256/vim-ripgrep', branch = 'fix/remove-complete-from-RgRoot' }
-  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+  -- use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
 
   use 'kevinhwang91/rnvimr'
 
@@ -180,7 +180,6 @@ packer.startup(function()
   use 'Pocco81/AutoSave.nvim'
 
   use 'phaazon/hop.nvim'
-
   use 'rktjmp/lush.nvim'
 
   use { 'NTBBloodbath/galaxyline.nvim' }
@@ -203,6 +202,11 @@ packer.startup(function()
   use 'tpope/vim-commentary'
  end
 )
+
+require('project_nvim').setup({
+  detection_methods = { "pattern", "lsp" },
+  patterns = { ".git" }
+})
 
 --
 --Gitsigns
@@ -355,17 +359,17 @@ require('telescope').setup({
       }
     }
   },
-  extensions = {
-    fzf = {
-      fuzzy = true,
-      override_generic_sorter = false,
-      override_file_sorter = true,
-      case_mode = "smart_case"
-    }
-  }
+  -- extensions = {
+  --   fzf = {
+  --     fuzzy = true,
+  --     override_generic_sorter = false,
+  --     override_file_sorter = true,
+  --     case_mode = "smart_case"
+  --   }
+  -- }
 })
 
-require('telescope').load_extension('fzf')
+require('telescope').load_extension('projects')
 
 --
 --Treesitter
@@ -373,6 +377,7 @@ require('telescope').load_extension('fzf')
 local configs = require'nvim-treesitter.configs'
 configs.setup {
   ensure_installed = "all",
+  ignore_install =  { "phpdoc" },
   highlight = {
     enable = true,
   },
