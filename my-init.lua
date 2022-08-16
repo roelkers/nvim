@@ -98,11 +98,11 @@ key_mapper('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>')
 key_mapper('n', '<leader>i', ':lua vim.lsp.buf.formatting_sync()<CR>')
 key_mapper('n', '<leader>dn', ':lua vim.diagnostic.goto_next()<CR>')
 key_mapper('n', '<leader>dp', ':lua vim.diagnostic.goto_prev()<CR>')
-key_mapper('', '<C-p>', ':lua require("telescope.builtin").find_files({ search_dirs = { "/home/rufus/Dev", "/Users/oelkersr/Dev" } })<CR>')
-key_mapper('', '<C-f>', ':lua require("telescope.builtin").live_grep()<CR>')
+key_mapper('', '<C-p>', ':lua require"telescope.builtin".find_files({ search_dirs = { "/home/rufus/Dev", "/Users/oelkersr/Dev" } })<CR>')
+key_mapper('', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
 key_mapper('', '<leader>fh', ':lua require("telescope.builtin").help_tags()<CR>')
 key_mapper('', '<C-c>', ':lua require("telescope.builtin").buffers()<CR>')
-key_mapper('', '<C-g>', ':lua require("telescope.builtin").grep_string({ search=vim.fn.input("Grep for >") })<CR>')
+key_mapper('', '<C-g>', ':lua require"telescope.builtin".grep_string({ search=vim.fn.input("Grep for >") })<CR>')
 key_mapper('', '<C-e>', ':lua require("telescope.builtin").lsp_workspace_diagnostics()<CR>')
 key_mapper('', '<leader>gc', ':lua require("telescope.builtin").git_commits()<CR>')
 key_mapper('', '<leader>gb', ':lua require("telescope.builtin").git_branches()<CR>')
@@ -117,6 +117,9 @@ key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
 key_mapper('n', '<leader>gg', ':LazyGit<CR>')
 key_mapper('i', '<C-BS>', '<C-w>')
 key_mapper('i', '<C-h>', '<C-w>')
+key_mapper('n', '<leader>dh', ':DashboardFindHistory')
+key_mapper('n', '<leader>ds', ':SessionSave<CR>')
+key_mapper('n', '<leader>dl', ':SessionLoad<CR>')
 
 --key_mapper('n', '<leader>cw', ':! prettiercheck www<CR>')
 --key_mapper('n', '<leader>ca', ':! prettiercheck api<CR>')
@@ -720,7 +723,16 @@ table.insert(gls.right, {
 --
 --
 
-vim.g.dashboard_custom_header = {
+
+vim.cmd[[
+  autocmd ColorScheme * hi DashboardHeader guifg=#ebcb8b
+]]
+
+local home = os.getenv('HOME')
+local db = require('dashboard')
+
+db.session_directory = home .. '/.config/sessions'
+db.custom_header = {
   ' ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗',
   ' ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║',
   ' ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║',
@@ -729,11 +741,24 @@ vim.g.dashboard_custom_header = {
   ' ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝'
 } 
 
---vim.g.dashboard_custom_footer = 'Have fun!'
-vim.cmd[[
-  autocmd ColorScheme * hi DashboardHeader guibg=#232731 guifg=#ebcb8b
-]]
-vim.cmd "let g:dashboard_session_directory = $HOME..'/.config/nvim/.sessions'"
+db.custom_center = {
+    {icon = '  ',
+    desc = 'Recently latest session                  ',
+    shortcut = 'SPC d l',
+    action ='SessionLoad'},
+    {icon = '  ',
+    desc = 'Find  File                              ',
+    action = 'Telescope find_files find_command=rg,--hidden,--files',
+    shortcut = '<C-p>'},
+    {icon = '  ',
+    desc ='File Browser                            ',
+    action =  'RnvimrToggle',
+    shortcut = '<C-r>'},
+    {icon = '  ',
+    desc = 'Find  word                              ',
+    action = 'Telescope live_grep',
+    shortcut = '<C-f>'},
+}
 
 vim.cmd("colorscheme snazzy")
 vim.cmd("set noequalalways")
