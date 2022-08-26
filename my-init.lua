@@ -55,6 +55,8 @@ vim.g.encoding = "UTF-8"
 vim.g.dashboard_default_executive = 'telescope'
 vim.o.clipboard = "unnamedplus"
 
+local home = os.getenv('HOME')
+
 --
 --Mappings
 --
@@ -111,6 +113,7 @@ key_mapper('', '<leader>o', ':lua require("telescope.builtin").oldfiles()<CR>')
 key_mapper('', '<leader>r', ':lua require("telescope.builtin").pickers()<CR>')
 key_mapper('', '<leader>h', ':lua require("telescope.builtin").search_history()<CR>')
 key_mapper('', '<leader>p', ':lua require("telescope.builtin").resume()<CR>')
+key_mapper('', '<C-a>', ':lua require("telescope").extensions.frecency.frecency()<CR>')
 key_mapper('', '<leader>c', ':cclose<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
@@ -120,11 +123,6 @@ key_mapper('i', '<C-h>', '<C-w>')
 key_mapper('n', '<leader>dh', ':DashboardFindHistory')
 key_mapper('n', '<leader>ds', ':SessionSave<CR>')
 key_mapper('n', '<leader>dl', ':SessionLoad<CR>')
-
---key_mapper('n', '<leader>cw', ':! prettiercheck www<CR>')
---key_mapper('n', '<leader>ca', ':! prettiercheck api<CR>')
---key_mapper('n', '<leader>pw', ':! prettierwrite www<CR>')
---key_mapper('n', '<leader>pa', ':! prettierwrite api<CR>')
 
 --
 --Plugins
@@ -169,7 +167,14 @@ packer.startup(function()
   use 'nvim-lua/plenary.nvim'
   use 'nvim-lua/telescope.nvim' 
   use { 'miyase256/vim-ripgrep', branch = 'fix/remove-complete-from-RgRoot' }
-  -- use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+  use { 
+    "nvim-telescope/telescope-frecency.nvim",
+    config = function()
+      require"telescope".load_extension("frecency")
+    end,
+    requires = {"tami5/sqlite.lua"}
+  }
+
 
   use 'kevinhwang91/rnvimr'
 
@@ -360,14 +365,17 @@ require('telescope').setup({
       }
     }
   },
-  -- extensions = {
-  --   fzf = {
-  --     fuzzy = true,
-  --     override_generic_sorter = false,
-  --     override_file_sorter = true,
-  --     case_mode = "smart_case"
-  --   }
-  -- }
+  extensions = {
+    frecency = {
+      show_scores = false,
+      show_unindexed = true,
+      ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*"},
+      disable_devicons = false,
+      workspaces = {
+        ["mms"]    = home .. "/Dev/MediaMarkt"
+      }
+    }
+  }
 })
 
 require('telescope').load_extension('projects')
@@ -378,7 +386,7 @@ require('telescope').load_extension('projects')
 local configs = require'nvim-treesitter.configs'
 configs.setup {
   ensure_installed = "all",
-  ignore_install =  { "phpdoc" },
+  ignore_install =  { "phpdoc", "elixir" },
   highlight = {
     enable = true,
   },
@@ -728,7 +736,6 @@ vim.cmd[[
   autocmd ColorScheme * hi DashboardHeader guifg=#ebcb8b
 ]]
 
-local home = os.getenv('HOME')
 local db = require('dashboard')
 
 db.session_directory = home .. '/.config/sessions'
