@@ -55,6 +55,11 @@ vim.g.encoding = "UTF-8"
 vim.g.dashboard_default_executive = 'telescope'
 vim.o.clipboard = "unnamedplus"
 
+--
+-- dap
+--
+vim.g.dap_virtual_text = true
+
 local home = os.getenv('HOME')
 
 --
@@ -124,6 +129,27 @@ key_mapper('n', '<leader>dh', ':DashboardFindHistory')
 key_mapper('n', '<leader>ds', ':SessionSave<CR>')
 key_mapper('n', '<leader>dl', ':SessionLoad<CR>')
 
+key_mapper('n', '<leader>dct', '<cmd>lua require"dap".continue()<CR>')
+key_mapper('n', '<leader>dsv', '<cmd>lua require"dap".step_over()<CR>')
+key_mapper('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
+key_mapper('n', '<leader>dso', '<cmd>lua require"dap".step_out()<CR>')
+key_mapper('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
+
+key_mapper('n', '<leader>dsc', '<cmd>lua require"dap.ui.variables".scopes()<CR>')
+key_mapper('n', '<leader>dhh', '<cmd>lua require"dap.ui.variables".hover()<CR>')
+key_mapper('v', '<leader>dhv',
+          '<cmd>lua require"dap.ui.variables".visual_hover()<CR>')
+
+key_mapper('n', '<leader>duh', '<cmd>lua require"dap.ui.widgets".hover()<CR>')
+key_mapper('n', '<leader>duf',
+          "<cmd>lua local widgets=require'dap.ui.widgets';widgets.centered_float(widgets.scopes)<CR>")
+
+key_mapper('n', '<leader>dsbr',
+          '<cmd>lua require"dap".set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>')
+key_mapper('n', '<leader>dsbm',
+          '<cmd>lua require"dap".set_breakpoint(nil, nil, vim.fn.input("Log point message: "))<CR>')
+key_mapper('n', '<leader>dro', '<cmd>lua require"dap".repl.open()<CR>')
+key_mapper('n', '<leader>drl', '<cmd>lua require"dap".repl.run_last()<CR>')
 --
 --Plugins
 --
@@ -204,15 +230,76 @@ packer.startup(function()
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
   use 'RRethy/nvim-treesitter-textsubjects'
 
+  use 'mfussenegger/nvim-dap'
+  use {'nvim-telescope/telescope-dap.nvim'}
+  use {'theHamsta/nvim-dap-virtual-text'}
+
   use 'tpope/vim-surround'
   use 'tpope/vim-commentary'
  end
 )
 
+--
+-- project
+-- 
 require('project_nvim').setup({
   detection_methods = { "pattern", "lsp" },
   patterns = { ".git" }
 })
+
+--
+-- dap
+--
+local dap = require('dap')
+dap.adapters.node2 = {
+  type = 'executable',
+  command = 'node',
+  args = {'User/oelkersr/Dev/vscode-node-debug2/out/src/nodeDebug.js'},
+}
+dap.configurations.typescript = {
+  {
+    name = 'Launch',
+    type = 'node2',
+    request = 'launch',
+    program = '${file}',
+    cwd = vim.fn.getcwd(),
+    sourceMaps = true,
+    protocol = 'inspector',
+    console = 'integratedTerminal',
+  },
+  {
+    -- For this to work you need to make sure the node process is started with the `--inspect` flag.
+    name = 'Attach to process',
+    type = 'node2',
+    request = 'attach',
+    -- processId = require'dap.utils'.pick_process,
+    address = 'localhost',
+    port = 7600,
+    sourceMaps = true,
+  },
+}
+dap.configurations.javascript= {
+  {
+    name = 'Launch',
+    type = 'node2',
+    request = 'launch',
+    program = '${file}',
+    cwd = vim.fn.getcwd(),
+    sourceMaps = true,
+    protocol = 'inspector',
+    console = 'integratedTerminal',
+  },
+  {
+    -- For this to work you need to make sure the node process is started with the `--inspect` flag.
+    name = 'Attach to process',
+    type = 'node2',
+    request = 'attach',
+    -- processId = require'dap.utils'.pick_process,
+    address = 'localhost',
+    port = 7600,
+    sourceMaps = true,
+  },
+}
 
 --
 --Gitsigns
@@ -379,6 +466,7 @@ require('telescope').setup({
 })
 
 require('telescope').load_extension('projects')
+require('telescope').load_extension('dap')
 
 --
 --Treesitter
