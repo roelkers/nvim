@@ -1,27 +1,26 @@
 --
 --LSP colors
 --
-
 -- vim.cmd([[
 --   augroup lspxcolors
---     autocmd ColorScheme * call v:lua.vim.lsp.diagnostic._define_default_signs_and_highlights()
+--    autocmd ColorScheme * call v:lua.vim.lsp.diagnostic._define_default_signs_and_highlights()
 --   augroup END
 -- ]])
 -- Highlight current window
---vim.cmd([[
---  augroup statuslineBG 
---    autocmd ColorScheme * highlight StatusLine ctermfg=#ffffff ctermbg=#232731
---    autocmd ColorScheme * highlight StatusLineNC ctermfg=#ffffff  ctermbg=#444444
---  augroup END
---]])
---vim.cmd([[
-  -- augroup highlightLspError 
-  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineError ctermfg=#ff0000 ctermbg=#232731
-  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineHint ctermfg=#ffffff ctermbg=#232731
-  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineInfo ctermfg=#ffffff ctermbg=#232731
-  --   autocmd ColorScheme * highlight LspDiagnosticsUnderlineWarning ctermfg=#ffffff ctermbg=#232731
-  -- augroup END
-  -- ]])
+-- vim.cmd([[
+--   augroup statuslineBG 
+--     autocmd ColorScheme * highlight StatusLine ctermfg=#ffffff ctermbg=#232731
+--     autocmd ColorScheme * highlight StatusLineNC ctermfg=#ffffff  ctermbg=#444444
+--   augroup END
+-- ]])
+-- vim.cmd([[
+--   augroup highlightLspError 
+--    autocmd ColorScheme * highlight LspDiagnosticsUnderlineError ctermfg=#ff0000 ctermbg=#232731
+--    autocmd ColorScheme * highlight LspDiagnosticsUnderlineHint ctermfg=#ffffff ctermbg=#232731
+--    autocmd ColorScheme * highlight LspDiagnosticsUnderlineInfo ctermfg=#ffffff ctermbg=#232731
+--    autocmd ColorScheme * highlight LspDiagnosticsUnderlineWarning ctermfg=#ffffff ctermbg=#232731
+--   augroup END
+-- ]])
 
 
 --
@@ -105,14 +104,15 @@ key_mapper('', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
 key_mapper('', '<leader>fh', ':lua require("telescope.builtin").help_tags()<CR>')
 key_mapper('', '<C-c>', ':lua require("telescope.builtin").buffers()<CR>')
 key_mapper('', '<C-g>', ':lua require"telescope.builtin".grep_string({ search=vim.fn.input("Grep for >") })<CR>')
+key_mapper('', '<C-y>', ':lua require"telescope.builtin".grep_string()<CR>')
 key_mapper('', '<C-e>', ':lua require("telescope.builtin").lsp_workspace_diagnostics()<CR>')
 key_mapper('', '<leader>gc', ':lua require("telescope.builtin").git_commits()<CR>')
 key_mapper('', '<leader>gb', ':lua require("telescope.builtin").git_branches()<CR>')
 key_mapper('', '<C-x>', ':lua require("telescope.builtin").git_status()<CR>')
-key_mapper('', '<leader>o', ':lua require("telescope.builtin").oldfiles()<CR>')
+key_mapper('', '<C-o>', ':lua require("telescope.builtin").oldfiles()<CR>')
 key_mapper('', '<leader>r', ':lua require("telescope.builtin").pickers()<CR>')
 key_mapper('', '<leader>h', ':lua require("telescope.builtin").search_history()<CR>')
-key_mapper('', '<leader>p', ':lua require("telescope.builtin").resume()<CR>')
+key_mapper('', '<C-i>', ':lua require("telescope.builtin").resume()<CR>')
 key_mapper('', '<C-a>', ':lua require("telescope").extensions.frecency.frecency()<CR>')
 key_mapper('', '<leader>c', ':cclose<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
@@ -123,6 +123,8 @@ key_mapper('i', '<C-h>', '<C-w>')
 key_mapper('n', '<leader>dh', ':DashboardFindHistory')
 key_mapper('n', '<leader>ds', ':SessionSave<CR>')
 key_mapper('n', '<leader>dl', ':SessionLoad<CR>')
+key_mapper('n', '<leader>b', ':Neotree buffers toggle<CR>')
+key_mapper('n', '<leader>f', ':Neotree filesystem toggle<CR>')
 
 --
 --Plugins
@@ -206,6 +208,17 @@ packer.startup(function()
 
   use 'tpope/vim-surround'
   use 'tpope/vim-commentary'
+
+  use {
+  "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    requires = { 
+      "nvim-lua/plenary.nvim",
+      "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
+      "MunifTanjim/nui.nvim",
+    }
+  }
+
  end
 )
 
@@ -309,7 +322,8 @@ require('telescope').setup({
       i = {
         ["<C-n>"] = actions.move_selection_previous,
         ["<C-k>"] = actions.move_selection_previous,
-        ["<C-p>"] = actions.move_selection_next,
+        ["<C-p>"] = actions.select_default,
+        ["<C-l>"] = actions.select_default,
         ["<C-j>"] = actions.move_selection_next,
         ["<c-t>"] = trouble.open_with_trouble,
         ["<c-d>"] = actions.move_selection_next + actions.move_selection_next + actions.move_selection_next + actions.move_selection_next,
@@ -319,7 +333,8 @@ require('telescope').setup({
       n = {
         ["<C-n>"] = actions.move_selection_previous,
         ["<C-k>"] = actions.move_selection_previous,
-        ["<C-p>"] = actions.move_selection_next,
+        ["<C-p>"] = actions.select_default,
+        ["<C-l>"] = actions.select_default,
         ["<C-j>"] = actions.move_selection_next,
         ["<c-t>"] = trouble.open_with_trouble,
         ["<c-d>"] = actions.move_selection_next + actions.move_selection_next + actions.move_selection_next + actions.move_selection_next,
@@ -401,7 +416,6 @@ configs.setup {
 local lspconfig = require'lspconfig'
 local function custom_on_attach(client, bufnr)
   print('Attaching to ' .. client.name)
-  client.resolved_capabilities.document_formatting = false
   local ts_utils = require("nvim-lsp-ts-utils")
 
   -- defaults
@@ -412,31 +426,43 @@ local function custom_on_attach(client, bufnr)
 
       -- import all
       import_all_timeout = 5000, -- ms
+      -- lower numbers = higher priority
       import_all_priorities = {
-          buffers = 4, -- loaded buffer names
-          buffer_content = 3, -- loaded buffer content
-          local_files = 2, -- git files or files with relative path markers
           same_file = 1, -- add to existing import statement
+          local_files = 2, -- git files or files with relative path markers
+          buffer_content = 3, -- loaded buffer content
+          buffers = 4, -- loaded buffer names
       },
       import_all_scan_buffers = 100,
-      import_all_select_source = true,
+      import_all_select_source = false,
+      -- if false will avoid organizing imports
+      always_organize_imports = true,
 
-      -- eslint
-      eslint_enable_code_actions = true,
-      eslint_enable_disable_comments = true,
-      eslint_bin = "eslint",
-      eslint_config_fallback = nil,
-      eslint_enable_diagnostics = false,
-      eslint_show_rule_id = false,
+      -- filter diagnostics
+      filter_out_diagnostics_by_severity = {},
+      filter_out_diagnostics_by_code = {},
 
-      -- formatting
-      enable_formatting = true,
-      formatter = "prettier",
-      formatter_config_fallback = nil,
+      -- inlay hints
+      auto_inlay_hints = true,
+      inlay_hints_highlight = "Comment",
+      inlay_hints_priority = 200, -- priority of the hint extmarks
+      inlay_hints_throttle = 150, -- throttle the inlay hint request
+      inlay_hints_format = { -- format options for individual hint kind
+          Type = {},
+          Parameter = {},
+          Enum = {},
+          -- Example format customization for `Type` kind:
+          -- Type = {
+          --     highlight = "Comment",
+          --     text = function(text)
+          --         return "->" .. text:sub(2)
+          --     end,
+          -- },
+      },
 
       -- update imports on file move
-      update_imports_on_move = false,
-      require_confirmation_on_move = false,
+      update_imports_on_move = true,
+      require_confirmation_on_move = true,
       watch_dir = nil,
   }
 
@@ -445,12 +471,10 @@ local function custom_on_attach(client, bufnr)
 
   -- no default maps, so you may want to define some here
   local opts = {silent = true}
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "go", ":TSLspOrganize<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "qq", ":TSLspFixCurrent<CR>", opts)
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "qq", ":TSLspImportCurrent<CR>", opts)
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
-
-  -- vim.cmd("autocmd BufWritePost <buffer> lua vim.lsp.buf.formatting()")
 end
 
 local default_config = {
@@ -472,38 +496,28 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 --Formatting
 --
 require("null-ls").setup({
-    debug = true,
+    -- debug = true,
     sources = {
       require('null-ls').builtins.diagnostics.eslint,
       require('null-ls').builtins.code_actions.eslint,
-      require("null-ls").builtins.formatting.prettier.with {
-        filetypes = {
-          "typescriptreact",
-          "typescript",
-          "javascriptreact",
-          "javascript",
-          "svelte",
-          "json",
-          "jsonc",
-          "css",
-          "html",
-        },
-      },
-      -- on_attach = function(client)
-      --   if client.resolved_capabilities.document_formatting then
-      --       vim.cmd([[
-      --       augroup LspFormatting
-      --           autocmd! * <buffer>
-      --           autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
-      --       augroup END
-      --       ]])
-      --   end
-      -- end,
+      -- require("null-ls").builtins.formatting.prettier.with {
+      --   filetypes = {
+      --     "typescriptreact",
+      --     "typescript",
+      --     "javascriptreact",
+      --     "javascript",
+      --     "svelte",
+      --     "json",
+      --     "jsonc",
+      --     "css",
+      --     "html",
+      --   },
+      -- },
     }
 })
 
 --
---Treesitter Test Subjects
+--Treesitter Test Subjectsqh
 --
 require'nvim-treesitter.configs'.setup {
     textsubjects = {
@@ -767,7 +781,21 @@ db.custom_center = {
     shortcut = '<C-f>'},
 }
 
-vim.cmd("colorscheme snazzy")
+--vim.cmd("colorscheme lunaperche")
+vim.cmd("colorscheme dracula")
 vim.cmd("set noequalalways")
-
 --vim.lsp.set_log_level("debug")
+vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
+-- vim.cmd([[ autocmd VimEnter * Neotree | wincmd p ]])
+
+-- vim.api.nvim_create_augroup("neotree_autoopen", { clear = true })
+-- vim.api.nvim_create_autocmd("BufWinEnter", {
+--   desc = "Open neo-tree on enter",
+--   group = "neotree_autoopen",
+--   callback = function()
+--     if not vim.g.neotree_opened then
+--       vim.cmd "Neotree buffers"
+--       vim.g.neotree_opened = true
+--     end
+--   end,
+-- })
