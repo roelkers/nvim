@@ -174,7 +174,7 @@ packer.startup(function()
     config = function()
       require"telescope".load_extension("frecency")
     end,
-    requires = {"tami5/sqlite.lua"}
+    requires = {"kkharji/sqlite.lua"}
   }
 
 
@@ -185,7 +185,7 @@ packer.startup(function()
   use 'windwp/nvim-autopairs'
   use 'windwp/nvim-ts-autotag'
 
-  use 'Pocco81/AutoSave.nvim'
+  use 'Pocco81/auto-save.nvim'
 
   use 'phaazon/hop.nvim'
   use 'rktjmp/lush.nvim'
@@ -200,7 +200,7 @@ packer.startup(function()
   }
 
   use 'glepnir/dashboard-nvim'
-  use 'kdheepak/lazygit.nvim'
+  use { 'kdheepak/lazygit.nvim', branch = 'main' } 
 
   use 'jose-elias-alvarez/null-ls.nvim'
   use 'jose-elias-alvarez/nvim-lsp-ts-utils'
@@ -482,6 +482,14 @@ local default_config = {
 }
 -- setup language servers here
 lspconfig.tsserver.setup(default_config)
+lspconfig.gopls.setup{}
+lspconfig.ccls.setup {
+  init_options = {
+    cache = {
+      directory = "~/.ccls/ccls-cache";
+    };
+  }
+}
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -580,7 +588,7 @@ require('nvim-autopairs').setup({
 --AutoSave
 --
 
-require('autosave').setup({
+require('auto-save').setup({
   enabled = true
 })
 
