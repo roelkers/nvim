@@ -209,15 +209,11 @@ packer.startup(function()
   use 'tpope/vim-surround'
   use 'tpope/vim-commentary'
 
-  use {
-  "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
-    requires = { 
-      "nvim-lua/plenary.nvim",
-      "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
-      "MunifTanjim/nui.nvim",
-    }
-  }
+  use 'mfussenegger/nvim-dap'
+  use {'nvim-telescope/telescope-dap.nvim'}
+  use {'theHamsta/nvim-dap-virtual-text'}
+  use 'leoluz/nvim-dap-go'
+  use 'rcarriga/nvim-dap-ui'
 
  end
 )
