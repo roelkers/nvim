@@ -56,6 +56,8 @@ vim.o.clipboard = "unnamedplus"
 
 local home = os.getenv('HOME')
 
+vim.g.dap_virtual_text = true
+
 --
 --Mappings
 --
@@ -123,8 +125,27 @@ key_mapper('i', '<C-h>', '<C-w>')
 key_mapper('n', '<leader>dh', ':DashboardFindHistory')
 key_mapper('n', '<leader>ds', ':SessionSave<CR>')
 key_mapper('n', '<leader>dl', ':SessionLoad<CR>')
-key_mapper('n', '<leader>b', ':Neotree buffers toggle<CR>')
-key_mapper('n', '<leader>f', ':Neotree filesystem toggle<CR>')
+
+key_mapper('n', '<leader>c', '<cmd>lua require"dap".continue()<CR>')
+key_mapper('n', '<leader>dc', '<cmd>lua require"dap".run_to_cursor()<CR>')
+key_mapper('n', '<leader>b', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
+key_mapper('n', '<leader>B', '<cmd>lua require"dap".set_breakpoint(vim.fn.input("Breakpoint condition: "))<CR>')
+key_mapper('n', '<leader>dg', '<cmd>lua require"dap-go".debug_test()<CR>')
+key_mapper('n', '<leader>dr', '<cmd>lua require"dap-go".debug()<CR>')
+key_mapper('n', '<leader>dc', '<cmd>lua require"dapui".close()<CR>')
+
+key_mapper('n', '<leader>ds', '<cmd>lua require"dap".step_over()<CR>')
+key_mapper('n', '<leader>di', '<cmd>lua require"dap".step_into()<CR>')
+key_mapper('n', '<leader>do', '<cmd>lua require"dap".step_out()<CR>')
+
+key_mapper('n', '<leader>du', '<cmd>lua require"dap.ui.widgets".scopes()<CR>')
+key_mapper('n', '<leader>dh', '<cmd>lua require"dap.ui.widgets".hover()<CR>')
+-- key_mapper('v', '<leader>du', '<cmd>lua require"dap.ui.widgets".visual_hover()<CR>')
+
+-- key_mapper('n', '<leader>duf', "<cmd>lua local widgets=require'dap.ui.widgets';widgets.centered_float(widgets.scopes)<CR>")
+-- key_mapper('n', '<leader>dsbm', '<cmd>lua require"dap".set_breakpoint(nil, nil, vim.fn.input("Log point message: "))<CR>')
+-- key_mapper('n', '<leader>dro', '<cmd>lua require"dap".repl.open()<CR>')
+-- key_mapper('n', '<leader>drl', '<cmd>lua require"dap".repl.run_last()<CR>')
 
 --
 --Plugins
@@ -571,6 +592,47 @@ cmp.setup({
     { name = "treesitter" },
     { name = 'vsnip' }
   }
+})
+
+--
+-- Dap
+-- 
+local dap = require('dap')
+local dapui = require('dapui')
+
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
+
+require('dap-go').setup({
+  on_attach = function()
+  end
+})
+
+dapui.setup({
+  mappings = {
+    -- Use a table to apply multiple mappings
+    expand = { "<CR>", "<2-LeftMouse>" },
+    open = "o",
+    remove = "d",
+    edit = "e",
+    repl = "r",
+    toggle = "t",
+  },
+  -- Use this to override mappings for specific elements
+  element_mappings = {
+    -- Example:
+    -- stacks = {
+    --   open = "<CR>",
+    --   expand = "o",
+    -- }
+  },
 })
 
 --
