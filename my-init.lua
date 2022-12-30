@@ -486,7 +486,7 @@ lspconfig.gopls.setup{}
 lspconfig.ccls.setup {
   init_options = {
     cache = {
-      directory = "~/.ccls/ccls-cache";
+      directory = home .. "./.ccls/ccls-cache";
     };
   }
 }
