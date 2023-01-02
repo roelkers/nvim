@@ -367,7 +367,7 @@ require('telescope').setup({
       },
       prompt_position = "top",
     },
-    file_ignore_patterns = { "node_modules", "/home/rufus/Dev/arbour/common" }, 
+    file_ignore_patterns = { "node_modules", "term://" }, 
     sorting_strategy = "ascending"
   },
   pickers = {
