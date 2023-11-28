@@ -92,6 +92,13 @@ key_mapper('n', 'tf', ':TSToolsFixAll<CR>')
 key_mapper('n', 'td', ':TSToolsGoToSourceDefinition<CR>')
 key_mapper('n', 'tr', ':TSToolsRenameFile<CR>')
 
+key_mapper('n', '<leader>xx', ':lua require("trouble").toggle()<CR>')
+key_mapper('n', '<leader>xw', ':lua require("trouble").toggle("workspace_diagnostics")<CR>')
+key_mapper('n', '<leader>xd', ':lua require("trouble").toggle("document_diagnostics")<CR>')
+key_mapper('n', '<leader>xq', ':lua require("trouble").toggle("quickfix")<CR>')
+key_mapper('n', '<leader>xl', ':lua require("trouble").toggle("loclist")<CR>')
+key_mapper('n', 'gR', ':lua require("trouble").toggle("lsp_references")<CR>')
+
 key_mapper('', '<C-p>', ':lua require"telescope.builtin".find_files({ search_dirs = { "/home/rufus/Dev", "/Users/oelkersr/Dev" } })<CR>')
 key_mapper('', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
 key_mapper('', '<leader>fh', ':lua require("telescope.builtin").help_tags()<CR>')
@@ -156,6 +163,7 @@ packer.startup(function()
   --theme
 
   use 'christianchiarulli/nvcode-color-schemes.vim' 
+  use { "catppuccin/nvim", as = "catppuccin" }
   
   use 'kyazdani42/nvim-web-devicons'
   
@@ -184,28 +192,28 @@ packer.startup(function()
     end,
     requires = {"kkharji/sqlite.lua"}
   }
-  use {
-    'creativenull/efmls-configs-nvim',
-    tag = 'v1.*', -- tag is optional, but recommended
-    requires = { 'neovim/nvim-lspconfig' },
-  }
+  -- use {
+  --   'creativenull/efmls-configs-nvim',
+  --   tag = 'v1.*', -- tag is optional, but recommended
+  --   requires = { 'neovim/nvim-lspconfig' },
+  -- }
 
-  use {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v3.x',
-    requires = {
-      --- Uncomment these if you want to manage LSP servers from neovim
-      -- {'williamboman/mason.nvim'},
-      -- {'williamboman/mason-lspconfig.nvim'},
+  -- use {
+  --   'VonHeikemen/lsp-zero.nvim',
+  --   branch = 'v3.x',
+  --   requires = {
+  --     --- Uncomment these if you want to manage LSP servers from neovim
+  --     -- {'williamboman/mason.nvim'},
+  --     -- {'williamboman/mason-lspconfig.nvim'},
 
-      -- LSP Support
-      {'neovim/nvim-lspconfig'},
-      -- Autocompletion
-      {'hrsh7th/nvim-cmp'},
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'L3MON4D3/LuaSnip'},
-    }
-  }
+  --     -- LSP Support
+  --     {'neovim/nvim-lspconfig'},
+  --     -- Autocompletion
+  --     {'hrsh7th/nvim-cmp'},
+  --     {'hrsh7th/cmp-nvim-lsp'},
+  --     {'L3MON4D3/LuaSnip'},
+  --   }
+  -- }
   use {
     "pmizio/typescript-tools.nvim",
     requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
@@ -746,13 +754,15 @@ table.insert(gls.right, {
 --
 --
 
+-- vim.cmd[[
+--   autocmd ColorScheme * hi DashboardHeader guifg=#ebcb8b
+-- ]]
 
-vim.cmd[[
-  autocmd ColorScheme * hi DashboardHeader guifg=#ebcb8b
-]]
+vim.cmd("colorscheme catppuccin")
+-- catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
 
 --vim.cmd("colorscheme lunaperche")
-vim.cmd("colorscheme dracula")
+-- vim.cmd("colorscheme dracula")
 vim.cmd("set noequalalways")
 --vim.lsp.set_log_level("debug")
 vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
