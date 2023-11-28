@@ -1,27 +1,3 @@
---
---LSP colors
---
--- vim.cmd([[
---   augroup lspxcolors
---    autocmd ColorScheme * call v:lua.vim.lsp.diagnostic._define_default_signs_and_highlights()
---   augroup END
--- ]])
--- Highlight current window
--- vim.cmd([[
---   augroup statuslineBG 
---     autocmd ColorScheme * highlight StatusLine ctermfg=#ffffff ctermbg=#232731
---     autocmd ColorScheme * highlight StatusLineNC ctermfg=#ffffff  ctermbg=#444444
---   augroup END
--- ]])
--- vim.cmd([[
---   augroup highlightLspError 
---    autocmd ColorScheme * highlight LspDiagnosticsUnderlineError ctermfg=#ff0000 ctermbg=#232731
---    autocmd ColorScheme * highlight LspDiagnosticsUnderlineHint ctermfg=#ffffff ctermbg=#232731
---    autocmd ColorScheme * highlight LspDiagnosticsUnderlineInfo ctermfg=#ffffff ctermbg=#232731
---    autocmd ColorScheme * highlight LspDiagnosticsUnderlineWarning ctermfg=#ffffff ctermbg=#232731
---   augroup END
--- ]])
-
 
 --
 --Options
@@ -89,6 +65,9 @@ key_mapper('n', '<A-k>', '<C-w>k')
 key_mapper('n', '<A-h>', '<C-w>h')
 key_mapper('n', '<A-j>', '<C-w>j')
 key_mapper('n', '<A-l>', '<C-w>l')
+key_mapper('i', '<C-BS>', '<C-w>')
+key_mapper('i', '<C-h>', '<C-w>')
+
 key_mapper('n', 'gd', ':lua vim.lsp.buf.definition()<CR>')
 key_mapper('n', 'gi', ':lua vim.lsp.buf.implementation()<CR>')
 key_mapper('n', 'gw', ':lua vim.lsp.buf.document_symbol()<CR>')
@@ -96,11 +75,14 @@ key_mapper('n', 'gW', ':lua vim.lsp.buf.workspace_symbol()<CR>')
 key_mapper('n', 'gr', ':lua vim.lsp.buf.references()<CR>')
 key_mapper('n', 'gt', ':lua vim.lsp.buf.type_definition()<CR>')
 key_mapper('n', 'K', ':lua vim.lsp.buf.hover()<CR>')
-key_mapper('n', '<leader>af', ':lua vim.lsp.buf.code_action()<CR>')
+key_mapper('n', '<leader>k', ':lua vim.lsp.buf.signature_help()<CR>')
+key_mapper('n', '<leader>ca', ':lua vim.lsp.buf.code_action()<CR>')
 key_mapper('n', '<leader>rn', ':lua vim.lsp.buf.rename()<CR>')
 key_mapper('n', '<leader>i', ':lua vim.lsp.buf.formatting_sync()<CR>')
 key_mapper('n', '<leader>dn', ':lua vim.diagnostic.goto_next()<CR>')
 key_mapper('n', '<leader>dp', ':lua vim.diagnostic.goto_prev()<CR>')
+key_mapper('n', '<leader>q', ':lua vim.diagnostic.setloclist()<CR>')
+
 key_mapper('', '<C-p>', ':lua require"telescope.builtin".find_files({ search_dirs = { "/home/rufus/Dev", "/Users/oelkersr/Dev" } })<CR>')
 key_mapper('', '<C-f>', ':lua require"telescope.builtin".live_grep()<CR>')
 key_mapper('', '<leader>fh', ':lua require("telescope.builtin").help_tags()<CR>')
@@ -120,11 +102,6 @@ key_mapper('', '<leader>c', ':cclose<CR>')
 key_mapper('n', 's', ':HopWord<CR>')
 key_mapper('n', '<leader>dt', ':Gitsigns diffthis<CR>')
 key_mapper('n', '<leader>gg', ':LazyGit<CR>')
-key_mapper('i', '<C-BS>', '<C-w>')
-key_mapper('i', '<C-h>', '<C-w>')
-key_mapper('n', '<leader>dh', ':DashboardFindHistory')
-key_mapper('n', '<leader>ds', ':SessionSave<CR>')
-key_mapper('n', '<leader>dl', ':SessionLoad<CR>')
 
 key_mapper('n', '<leader>c', '<cmd>lua require"dap".continue()<CR>')
 key_mapper('n', '<leader>dc', '<cmd>lua require"dap".run_to_cursor()<CR>')
@@ -140,6 +117,8 @@ key_mapper('n', '<leader>do', '<cmd>lua require"dap".step_out()<CR>')
 
 key_mapper('n', '<leader>du', '<cmd>lua require"dap.ui.widgets".scopes()<CR>')
 key_mapper('n', '<leader>dh', '<cmd>lua require"dap.ui.widgets".hover()<CR>')
+
+--key_mapper('n', '<leader>gr', ':Qfreplace<CR>')
 -- key_mapper('v', '<leader>du', '<cmd>lua require"dap.ui.widgets".visual_hover()<CR>')
 
 -- key_mapper('n', '<leader>duf', "<cmd>lua local widgets=require'dap.ui.widgets';widgets.centered_float(widgets.scopes)<CR>")
@@ -166,7 +145,6 @@ packer.startup(function()
   use 'sheerun/vim-polyglot'
 
   --theme
- --use 'tjdevries/colorbuddy.nvim'
 
   use 'christianchiarulli/nvcode-color-schemes.vim' 
   
@@ -178,7 +156,7 @@ packer.startup(function()
   use "hrsh7th/cmp-buffer"
   use "hrsh7th/cmp-nvim-lsp"
   use "hrsh7th/cmp-path"
-  use "hrsh7th/cmp-nvim-lua"
+  --use "hrsh7th/cmp-nvim-lua"
   use 'hrsh7th/cmp-vsnip'
   use 'hrsh7th/vim-vsnip'
   use "hrsh7th/nvim-cmp"
@@ -197,7 +175,35 @@ packer.startup(function()
     end,
     requires = {"kkharji/sqlite.lua"}
   }
+  use {
+    'creativenull/efmls-configs-nvim',
+    tag = 'v1.*', -- tag is optional, but recommended
+    requires = { 'neovim/nvim-lspconfig' },
+  }
 
+  use {
+    'VonHeikemen/lsp-zero.nvim',
+    branch = 'v3.x',
+    requires = {
+      --- Uncomment these if you want to manage LSP servers from neovim
+      -- {'williamboman/mason.nvim'},
+      -- {'williamboman/mason-lspconfig.nvim'},
+
+      -- LSP Support
+      {'neovim/nvim-lspconfig'},
+      -- Autocompletion
+      {'hrsh7th/nvim-cmp'},
+      {'hrsh7th/cmp-nvim-lsp'},
+      {'L3MON4D3/LuaSnip'},
+    }
+  }
+  use {
+    "pmizio/typescript-tools.nvim",
+    requires = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    config = function()
+      require("typescript-tools").setup {}
+    end,
+  }
 
   use 'kevinhwang91/rnvimr'
 
@@ -220,11 +226,8 @@ packer.startup(function()
     }
   }
 
-  use 'glepnir/dashboard-nvim'
   use { 'kdheepak/lazygit.nvim', branch = 'main' } 
 
-  use 'jose-elias-alvarez/null-ls.nvim'
-  use 'jose-elias-alvarez/nvim-lsp-ts-utils'
   use 'RRethy/nvim-treesitter-textsubjects'
 
   use 'tpope/vim-surround'
@@ -236,6 +239,7 @@ packer.startup(function()
   use 'leoluz/nvim-dap-go'
   use 'rcarriga/nvim-dap-ui'
 
+  use 'nicwest/vim-camelsnek'
  end
 )
 
@@ -417,7 +421,7 @@ require('telescope').load_extension('projects')
 --
 local configs = require'nvim-treesitter.configs'
 configs.setup {
-  ensure_installed = "all",
+  ensure_installed = { "c", "lua", "vim", "javascript", "typescript", "html", "terraform", "yaml", "dockerfile", "bash", "markdown", "tsx", "glimmer", "xml", "json", "make", "purescript", "go", "cpp", "gomod" },
   ignore_install =  { "phpdoc", "elixir" },
   highlight = {
     enable = true,
@@ -428,77 +432,35 @@ configs.setup {
 }
 
 --
---LSP
+--Treesitter Test Subjects
 --
-local lspconfig = require'lspconfig'
-local function custom_on_attach(client, bufnr)
-  print('Attaching to ' .. client.name)
-  local ts_utils = require("nvim-lsp-ts-utils")
-
-  -- defaults
-  ts_utils.setup {
-      debug = false,
-      disable_commands = false,
-      enable_import_on_completion = false,
-
-      -- import all
-      import_all_timeout = 5000, -- ms
-      -- lower numbers = higher priority
-      import_all_priorities = {
-          same_file = 1, -- add to existing import statement
-          local_files = 2, -- git files or files with relative path markers
-          buffer_content = 3, -- loaded buffer content
-          buffers = 4, -- loaded buffer names
-      },
-      import_all_scan_buffers = 100,
-      import_all_select_source = false,
-      -- if false will avoid organizing imports
-      always_organize_imports = true,
-
-      -- filter diagnostics
-      filter_out_diagnostics_by_severity = {},
-      filter_out_diagnostics_by_code = {},
-
-      -- inlay hints
-      auto_inlay_hints = true,
-      inlay_hints_highlight = "Comment",
-      inlay_hints_priority = 200, -- priority of the hint extmarks
-      inlay_hints_throttle = 150, -- throttle the inlay hint request
-      inlay_hints_format = { -- format options for individual hint kind
-          Type = {},
-          Parameter = {},
-          Enum = {},
-          -- Example format customization for `Type` kind:
-          -- Type = {
-          --     highlight = "Comment",
-          --     text = function(text)
-          --         return "->" .. text:sub(2)
-          --     end,
-          -- },
-      },
-
-      -- update imports on file move
-      update_imports_on_move = false,
-      require_confirmation_on_move = true,
-      watch_dir = nil,
-  }
-
-  -- required to fix code action ranges
-  ts_utils.setup_client(client)
-
-  -- no default maps, so you may want to define some here
-  local opts = {silent = true}
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "qq", ":TSLspImportCurrent<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "gs", ":TSLspOrganize<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "gr", ":TSLspRenameFile<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", ":TSLspImportAll<CR>", opts)
-end
-
-local default_config = {
-  on_attach = custom_on_attach,
+require'nvim-treesitter.configs'.setup {
+    textsubjects = {
+        enable = true,
+        keymaps = {
+            [','] = 'textsubjects-smart',
+            [';'] = 'textsubjects-container-outer',
+        }
+    },
 }
--- setup language servers here
-lspconfig.tsserver.setup(default_config)
+
+--
+-- LSP
+--
+--
+
+local api = require("typescript-tools.api")
+require("typescript-tools").setup {
+  -- handlers = {
+  --   ["textDocument/publishDiagnostics"] = api.filter_diagnostics(
+  --     -- Ignore 'This may be converted to an async function' diagnostics.
+  --     { 80006 }
+  --   ),
+  -- },
+}
+
+local lspconfig = require("lspconfig")
+
 lspconfig.gopls.setup{}
 lspconfig.ccls.setup {
   init_options = {
@@ -516,43 +478,6 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
     update_in_insert = true,
   }
 )
-
---
---Formatting
---
-require("null-ls").setup({
-    -- debug = true,
-    sources = {
-      require('null-ls').builtins.diagnostics.eslint,
-      require('null-ls').builtins.code_actions.eslint,
-      -- require("null-ls").builtins.formatting.prettier.with {
-      --   filetypes = {
-      --     "typescriptreact",
-      --     "typescript",
-      --     "javascriptreact",
-      --     "javascript",
-      --     "svelte",
-      --     "json",
-      --     "jsonc",
-      --     "css",
-      --     "html",
-      --   },
-      -- },
-    }
-})
-
---
---Treesitter Test Subjectsqh
---
-require'nvim-treesitter.configs'.setup {
-    textsubjects = {
-        enable = true,
-        keymaps = {
-            [','] = 'textsubjects-smart',
-            [';'] = 'textsubjects-container-outer',
-        }
-    },
-}
 
 --
 --Galaxyline
@@ -647,7 +572,8 @@ require('nvim-autopairs').setup({
 --
 
 require('auto-save').setup({
-  enabled = true
+  enabled = true,
+  debounce_delay = 135
 })
 
 --
@@ -815,37 +741,6 @@ table.insert(gls.right, {
 vim.cmd[[
   autocmd ColorScheme * hi DashboardHeader guifg=#ebcb8b
 ]]
-
-local db = require('dashboard')
-
-db.session_directory = home .. '/.config/sessions'
-db.custom_header = {
-  ' ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗',
-  ' ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║',
-  ' ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║',
-  ' ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║',
-  ' ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║',
-  ' ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝'
-} 
-
-db.custom_center = {
-    {icon = '  ',
-    desc = 'Recently latest session                  ',
-    shortcut = 'SPC d l',
-    action ='SessionLoad'},
-    {icon = '  ',
-    desc = 'Find  File                              ',
-    action = 'Telescope find_files find_command=rg,--hidden,--files',
-    shortcut = '<C-p>'},
-    {icon = '  ',
-    desc ='File Browser                            ',
-    action =  'RnvimrToggle',
-    shortcut = '<C-r>'},
-    {icon = '  ',
-    desc = 'Find  word                              ',
-    action = 'Telescope live_grep',
-    shortcut = '<C-f>'},
-}
 
 --vim.cmd("colorscheme lunaperche")
 vim.cmd("colorscheme dracula")
