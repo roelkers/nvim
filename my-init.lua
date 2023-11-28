@@ -411,9 +411,11 @@ require('telescope').setup({
       mappings = {
         i = {
           ["<c-d>"] = require("telescope.actions").delete_buffer,
+          ["<c-t>"] = require("trouble.providers.telescope").open_with_trouble
         },
         n = {
           ["<c-d>"] = require("telescope.actions").delete_buffer,
+          ["<c-t>"] = require("trouble.providers.telescope").open_with_trouble
         }
       }
     }
