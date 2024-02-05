@@ -46,7 +46,7 @@ local key_mapper = function(mode, key, result)
   )
 end
 
-key_mapper('n', 'r', ':RnvimrToggle<CR>')
+key_mapper('n', 'r', ':lua require("ranger-nvim").open(true)<CR>')
 key_mapper('n', '<ESC>', ':noh<CR><ESC>')
 key_mapper('', '<C-l>', '<C-w>l')
 key_mapper('', '<C-h>', '<C-w>h') 
@@ -222,8 +222,6 @@ packer.startup(function()
     end,
   }
 
-  use 'kevinhwang91/rnvimr'
-
   use 'ahmedkhalf/project.nvim'
 
   use 'windwp/nvim-autopairs'
@@ -257,6 +255,7 @@ packer.startup(function()
   use 'rcarriga/nvim-dap-ui'
 
   use 'nicwest/vim-camelsnek'
+  use 'kelly-lin/ranger.nvim'
  end
 )
 
@@ -264,6 +263,8 @@ require('project_nvim').setup({
   detection_methods = { "pattern", "lsp" },
   patterns = { ".git" }
 })
+
+require("ranger-nvim").setup({ replace_netrw = true })
 
 --
 --Gitsigns
@@ -760,7 +761,7 @@ table.insert(gls.right, {
 --   autocmd ColorScheme * hi DashboardHeader guifg=#ebcb8b
 -- ]]
 
-vim.cmd("colorscheme catppuccin")
+vim.cmd("colorscheme catppuccin-macchiato")
 -- catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
 
 --vim.cmd("colorscheme lunaperche")
